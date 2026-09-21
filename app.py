@@ -43,13 +43,10 @@ Question: {question}"""
             }
         ]
     )
-    # Return BOTH the answer and the chunks used, since we need the chunks to highlight later
     return response.content[0].text, relevant_chunks
 
 
 def highlight_chunks(full_text, chunks_to_highlight):
-    # Take the full resume text, and wrap any part that matches a used chunk
-    # in a yellow highlight (using basic HTML, since Streamlit can render HTML)
     highlighted = full_text
     for chunk in chunks_to_highlight:
         if chunk in highlighted:
@@ -75,4 +72,12 @@ if question:
 
     st.subheader("Resume (highlighted sections were used to answer your question)")
     highlighted_resume = highlight_chunks(full_text, used_chunks)
-    st.markdown(highlighted_resume, unsafe_allow_html=True)
+
+    # Wrap the resume in a scrollable, bordered box so messy PDF spacing
+    # doesn't sprawl across the whole page
+    st.markdown(
+        f'''<div style="max-height: 500px; overflow-y: scroll; padding: 15px;
+        border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap;
+        font-family: monospace;">{highlighted_resume}</div>''',
+        unsafe_allow_html=True
+    )
